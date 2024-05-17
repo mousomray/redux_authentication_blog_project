@@ -67,16 +67,20 @@ export const AuthSlice = createSlice({
         },
 
 
+        // For to go Register page after keeping token in local storage 
         RegLog: (state, { payload }) => {
             localStorage.removeItem("name");
             state.Logouttoggle = false
 
         },
 
+        
+        // Redirect after login
         redirectToo: (state, { payload }) => {
             state.redirectTo = payload
         },
 
+       // Redirect Register page
         redirectTo_Register: (state, { payload }) => {
             state.redirectReg = payload
         }

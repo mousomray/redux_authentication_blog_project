@@ -71,6 +71,9 @@ const Login = () => {
     }, [redirectTo])
 
     
+    
+    // If I not use this function then I can't go register page when token will be present in local storage
+    
     const log = () => {
         dispatch(RegLog())
     }
