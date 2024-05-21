@@ -9,9 +9,10 @@ const initialState = {
     redirectTo: null, // For Redirect Page 
     Logouttoggle: false, // For Logout Button 
     userName: false,
-    redirectReg: null
+    redirectReg: null // For to Redirect Login
 }
 
+// API fetch for Register
 export const registerUser = createAsyncThunk("/signup", async (user) => {
     try {
         const apiurl = "register"
@@ -28,6 +29,7 @@ export const registerUser = createAsyncThunk("/signup", async (user) => {
     }
 });
 
+// API fetch for Login
 export const loginRequest = createAsyncThunk("login", async (user) => {
     try {
         const apiurl = "login"
@@ -89,7 +91,8 @@ export const AuthSlice = createSlice({
     },
 
     extraReducers: (builder) => {
-        // Register User
+        
+        // Register Request
         builder
 
             //For Registration Pending
@@ -102,8 +105,8 @@ export const AuthSlice = createSlice({
             .addCase(registerUser.fulfilled, (state, { payload }) => {
                 state.loading = false;
                 if (payload && payload.success === true) { // Check if payload exists
-                    localStorage.setItem("name", payload.data.name);
-                    state.redirectReg = "/login";
+                    localStorage.setItem("name", payload.data.name); // I use .data because data is present in API
+                    state.redirectReg = "/login"; // Redirect Login If Get Name in storage
                     // toast.success(`Hi ${payload?.data?.name}, ${payload?.message}`);
                 }
             })
@@ -124,9 +127,9 @@ export const AuthSlice = createSlice({
                 state.loading = false;
                 if (payload?.status === 200) {
                     localStorage.setItem("token", payload?.token);
-                    localStorage.setItem("name", payload?.user.name);
+                    localStorage.setItem("name", payload?.user.name); // Here I use .user beacuse in this API user is present not data
                     state.Logouttoggle = true;
-                    state.redirectTo = "/blog";
+                    state.redirectTo = "/blog"; // Redirect Blog After storing data in Local storage
                     // toast.success(`Hi ${payload?.user.name}, ${payload?.message}`);
                 }
             })

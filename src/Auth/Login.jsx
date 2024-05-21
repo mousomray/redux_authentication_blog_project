@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import Layout from '../Common/Layout';
 import { Link } from 'react-router-dom';
-import { loginRequest, RegLog } from '../Auth/authslice';
+import { loginRequest, RegLog } from '../Auth/authslice'; // Import loginRequest function
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -14,7 +14,7 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import LoginIcon from '@mui/icons-material/Login';
-import Loader from '../Common/Loader';
+import Loader from '../Common/Loader'; // Import Loader
 
 const initialValue = {
     email: '',
@@ -31,7 +31,13 @@ const Login = () => {
     const handleChange = (e) => {
         const { name, value } = e.target;
         setUser({ ...user, [name]: value });
-        setError({ ...error, [name]: '' });
+
+        // Short Cut Validation process in handle on change 
+        if (!value) {
+            setError({ ...error, [name]: `${name.charAt(0).toUpperCase() + name.slice(1)} is Required` });
+        } else {
+            setError({ ...error, [name]: '' });
+        }
     };
 
     const handleSubmit = async (e) => {
@@ -69,11 +75,12 @@ const Login = () => {
     useEffect(() => {
         redirectUser()
     }, [redirectTo])
+    // Redirect Area End 
 
-    
-    
+
+
     // If I not use this function then I can't go register page when token will be present in local storage
-    
+
     const log = () => {
         dispatch(RegLog())
     }

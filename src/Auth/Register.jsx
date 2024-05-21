@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 import Layout from '../Common/Layout';
 import { Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { registerUser } from '../Auth/authslice';
+import { registerUser } from '../Auth/authslice'; // Import registerUser function
 import { useNavigate } from 'react-router-dom';
 import { Typography, Container, Avatar, Grid, CssBaseline, TextField, Button, Box, FormControlLabel, Checkbox, Paper } from '@mui/material';
 import AppRegistrationIcon from '@mui/icons-material/AppRegistration';
-import Loader from '../Common/Loader';
+import Loader from '../Common/Loader'; // Import Loading 
 
 const initialValue = {
     name: '',
@@ -19,7 +19,7 @@ const initialValue = {
 const Register = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const { redirectReg, loading } = useSelector((state) => state?.Auth);
+    const { redirectReg, loading } = useSelector((state) => state?.Auth); // Get Data from Store 
     const [user, setUser] = useState(initialValue);
     const [error, setError] = useState({});
     const [image, setImage] = useState(null);
@@ -52,6 +52,7 @@ const Register = () => {
         const { name, value } = e.target;
         setUser({ ...user, [name]: value });
 
+       // Short Cut Validation process in handle on change 
         if (!value) {
             setError({ ...error, [name]: `${name.charAt(0).toUpperCase() + name.slice(1)} is Required` });
         } else {

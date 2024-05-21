@@ -28,6 +28,7 @@ function ResponsiveAppBar() {
     const name = localStorage.getItem("name");
     const navigate = useNavigate()
 
+    // Handle of Logout
     const handleLogout = () => {
         dispatch(logout())
         navigate("/login")
@@ -171,7 +172,11 @@ function ResponsiveAppBar() {
                                     >
                                         {settings.map((setting) => (
                                             <MenuItem key={setting} onClick={setting === 'Logout' ? handleLogout : handleCloseUserMenu}>
-                                                <Typography textAlign="center">{setting}</Typography>
+                                                {setting === 'Profile' ? (
+                                                    <Typography textAlign="center">Profile: {name}</Typography>
+                                                ) : (
+                                                    <Typography textAlign="center">{setting}</Typography>
+                                                )}
                                             </MenuItem>
                                         ))}
                                     </Menu>
