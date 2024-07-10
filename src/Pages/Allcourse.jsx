@@ -36,6 +36,17 @@ const Allcourse = () => {
     const dispatch = useDispatch();
     const { allcoursedata, loading } = useSelector((state) => state.myallcourse);
     const [isLoading, setIsLoading] = useState(true);
+    const [searchQuery, setSearchQuery] = useState(''); // For Search Course
+
+    // Handle For Search
+    const handleSearchChange = (event) => {
+        setSearchQuery(event.target.value);
+    };
+
+    // Filter course based on search query
+    const filteredCourse = Array.isArray(allcoursedata) && allcoursedata?.filter((course) =>
+        course.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
 
     useEffect(() => {
         dispatch(allcourse())
@@ -44,7 +55,29 @@ const Allcourse = () => {
 
     return (
         <Layout>
-            <TableContainer component={Paper} style={{ marginTop: '45px', display: 'flex', justifyContent: 'center' }}>
+
+            <input
+                type="text"
+                placeholder="Search course..."
+                value={searchQuery}
+                onChange={handleSearchChange}
+                style={{
+                    marginTop: '80px',
+                    width: '100%',
+                    padding: '15px',
+                    borderRadius: '25px',
+                    border: '1px solid #ccc',
+                    boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
+                    fontSize: '16px',
+                    boxSizing: 'border-box',
+                    backgroundImage: 'linear-gradient(to right, #ffffff, #f2f2f2)',
+                    backgroundSize: '200% auto',
+                    transition: 'background-position 0.5s ease',
+                }}
+            />
+
+
+            <TableContainer component={Paper} style={{ marginTop: '10px', display: 'flex', justifyContent: 'center' }}>
                 <Table sx={{ minWidth: 700 }} aria-label="customized table">
                     <TableHead>
                         <TableRow>
@@ -63,9 +96,9 @@ const Allcourse = () => {
                                 </StyledTableCell>
                             </TableRow>
                         ) : (
-                            allcoursedata.map((value) => (
+                            filteredCourse.map((value) => (
                                 <StyledTableRow key={value._id}>
-                                    <StyledTableCell align="centre"><img src={`https://restapinodejs.onrender.com/api/course/photo/${value?._id}`} alt="" style={{ height: '50px' }} /></StyledTableCell>
+                                    <StyledTableCell align="centre"><img src={`${process.env.REACT_APP_BASE_URL}/course/photo/${value?._id}`} alt="" style={{ height: '50px' }} /></StyledTableCell>
                                     <StyledTableCell align="centre">{value?.name}</StyledTableCell>
                                     <StyledTableCell align="centre">{value?.requirement}</StyledTableCell>
                                     <StyledTableCell align="centre">{value?.duration}</StyledTableCell>

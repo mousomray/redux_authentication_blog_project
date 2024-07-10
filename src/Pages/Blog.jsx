@@ -1,111 +1,117 @@
-import React from 'react';
-import { styled } from '@mui/material/styles';
-import Box from '@mui/material/Box';
-import Paper from '@mui/material/Paper';
-import Grid from '@mui/material/Grid';
-import Layout from '../Common/Layout';
-import { useState, useEffect } from 'react';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell, { tableCellClasses } from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import { useSelector, useDispatch } from 'react-redux';
-import DetailsIcon from '@mui/icons-material/Details';
-import Skeleton from '@mui/material/Skeleton';
+import React, { useState } from 'react'
 import { Link } from 'react-router-dom';
-
-// Import API area
-import { allblog } from '../Allreducers/blogslice';
+import Layout from '../Common/Layout'
+import { useQuery } from '@tanstack/react-query'
+import { allblog } from '../Allreducers/blogslice'
+import { useDispatch } from 'react-redux'
 import Category from './Category';
-import Recentpost from './Recentpost';
-
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  [`&.${tableCellClasses.head}`]: {
-    backgroundColor: theme.palette.common.black,
-    color: theme.palette.common.white,
-  },
-  [`&.${tableCellClasses.body}`]: {
-    fontSize: 14,
-  },
-}));
-
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
-  '&:nth-of-type(odd)': {
-    backgroundColor: theme.palette.action.hover,
-  },
-  // hide last border
-  '&:last-child td, &:last-child th': {
-    border: 0,
-  },
-}));
+import { Pagination } from '@mui/material';
+import Loader2 from '../Common/Loader2';
 
 const Blog = () => {
+
   const dispatch = useDispatch();
+  const [page, setPage] = useState(1);
+  const itemsPerPage = 2;
 
-  const { allblogdata, loading } = useSelector((state) => state.myallblog);
+  // Get Product For Use Query 
+  const getBlogdata = async () => {
+    const response = await dispatch(allblog()) // Call Blog function
+    return response?.payload
+  }
 
-  useEffect(() => {
-    dispatch(allblog());
-  }, []);
+  // Use Query For Department
+  const { isLoading, isError, data: blogdata, error, refetch } = useQuery({
+    queryKey: ['blog'],
+    queryFn: getBlogdata // This line of code work as same as useEffect()
+  })
+
+  // Calculate total pages
+  const totalPages = Math.ceil(blogdata?.length / itemsPerPage);
+
+  // Get current page data
+  const currentPageData = Array.isArray(blogdata) && blogdata?.slice((page - 1) * itemsPerPage, page * itemsPerPage);
+
+  // handle For Page Change
+  const handleChangePage = (event, value) => {
+    setPage(value);
+  };
+
+  if (isLoading) {
+    return (
+      <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}>
+        <h1><Loader2/></h1>
+      </div>
+    )
+  }
 
   return (
     <>
+
       <Layout>
-        <div className='container' style={{ marginTop: '100px' }}>
-          <Box sx={{ flexGrow: 1 }}>
-            <Grid container spacing={2}>
-              <Grid item xs={12} md={8}>
-                {/* Table Area Start */}
-                <TableContainer component={Paper} style={{ borderRadius: '15px', padding: '50px', boxShadow: '0px 4px 25px rgba(0, 0, 0, 0.1)' }}>
-                  <Table sx={{ minWidth: 700 }} aria-label="customized table">
-                    <TableHead style={{ backgroundColor: '#f8f9fa' }}>
-                      <TableRow>
-                        <StyledTableCell align="center"><strong>Image</strong></StyledTableCell>
-                        <StyledTableCell align="center"><strong>Title</strong></StyledTableCell>
-                        <StyledTableCell align="center"><strong>Create Date</strong></StyledTableCell>
-                        <StyledTableCell align="center"><strong>Details</strong></StyledTableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {loading ? (
-                        // Display Skeleton while loading
-                        <TableRow>
-                          <StyledTableCell colSpan={4} align="center">
-                            <Skeleton variant="rectangular" width="100%" height={50} />
-                            <Skeleton variant="rectangular" width="100%" height={50} />
-                            <Skeleton variant="rectangular" width="100%" height={50} />
-                          </StyledTableCell>
-                        </TableRow>
-                      ) : (
-                        allblogdata.map((item) => (
-                          <StyledTableRow key={item._id}>
-                            <StyledTableCell align="center"><img src={`${process.env.REACT_APP_BASE_URL}blog/image/${item._id}`} alt="" style={{ height: '80px', width: '150px', borderRadius: '10px' }} /></StyledTableCell>
-                            <StyledTableCell align="center"><b>{item?.title}</b></StyledTableCell>
-                            <StyledTableCell align="center">{new Date(item?.createdAt).toLocaleDateString('en-GB')}</StyledTableCell>
-                            <StyledTableCell align="center"><Link to={`/blogdetails/${item._id}`}><DetailsIcon style={{ align: 'centre', justifyContent: 'center' }} /></Link></StyledTableCell>
-                          </StyledTableRow>
-                        ))
-                      )}
-                    </TableBody>
-                  </Table>
-                </TableContainer>
-                {/* Table Area End */}
-              </Grid>
-              <Grid item xs={12} md={4} style={{ display: 'flex', justifyContent: 'center' }}>
-                <div style={{ backgroundColor: '#f8f9fa', padding: '20px', borderRadius: '15px', boxShadow: '0px 4px 25px rgba(0, 0, 0, 0.1)' }}>
-                  <Category />
-                  <hr />
-                  <Recentpost />
-                </div>
-              </Grid>
-            </Grid>
-          </Box>
-        </div>
+
+        <section id="blog" class="blog mt-5">
+          <div class="container">
+            <div class="row">
+              <div class="col-lg-8 entries">
+
+
+                {Array.isArray(currentPageData) && currentPageData?.map((value) => {
+                  return (
+                    <>
+                      <article class="entry" data-aos="fade-up">
+                        <div class="entry-img">
+                          <img src={`${process.env.REACT_APP_BASE_URL}blog/image/${value._id}`} alt="" class="img-fluid" />
+                        </div>
+                        <h2 class="entry-title">
+                          {value?.title}
+                        </h2>
+                        <div class="entry-content">
+                          <p
+
+                            dangerouslySetInnerHTML={{ __html: value?.postText?.slice(0, 285) }}
+
+                          />
+
+
+                          <Link to={`/blogdetails/${value._id}`}>
+                            <div class="read-more">
+                              <a href="blog-single.html">Read More</a>
+                            </div>
+                          </Link>
+                        </div>
+
+                      </article>
+                    </>
+                  )
+                })}
+
+                {/* Pagination Indicator*/}
+                <Pagination
+                  count={totalPages}
+                  page={page}
+                  onChange={handleChangePage}
+                  color='success'
+                  style={{ display: 'flex', justifyContent: 'center' }}
+                  variant="outlined"
+                  shape="rounded"
+                />
+
+              </div>
+              {/* <!-- End blog entries list --> */}
+              <Category />
+
+            </div>
+
+          </div>
+        </section>
+        {/* <!-- End Blog Section --> */}
+
+
+
       </Layout>
     </>
-  );
-};
+  )
+}
 
-export default Blog;
+export default Blog

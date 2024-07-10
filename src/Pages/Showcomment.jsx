@@ -73,7 +73,7 @@ const Showcomment = () => {
 
     return (
         <Container maxWidth="md">
-            <div style={{ display: 'flex', alignItems: 'center' }}>
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
                 <CommentIcon onClick={handleCommentIconClick} style={{ cursor: 'pointer' }} />
                 <span style={{ marginLeft: '5px' }}>{comments.length} Comments</span>
             </div>
@@ -81,7 +81,6 @@ const Showcomment = () => {
             {/* All comments */}
             {showComments && (
                 <List sx={{ width: '100%', bgcolor: 'background.paper', boxShadow: '0px 2px 4px black' }}>
-                    <h3 style={{ textAlign: 'center' }}>Comments</h3>
                     {comments.slice(0, comments.length).reverse().slice(0, loadmore).map((item, index) => (
                         <React.Fragment key={index}>
                             <ListItem alignItems="flex-start" style={{ marginBottom: '10px' }}>
@@ -106,7 +105,7 @@ const Showcomment = () => {
                     ))}
                     {loadmore < comments.length && (
                         <div className="text-center mt-3">
-                            <Link><p onClick={handleLoadmore} style={{ height: '20px', fontSize: '16px', cursor: 'pointer' }}>See More</p></Link>
+                            <Link><p onClick={handleLoadmore} style={{ height: '20px', fontSize: '16px', cursor: 'pointer', justifyContent: 'center' }}>See More</p></Link>
                         </div>
                     )}
 
@@ -123,10 +122,10 @@ const Showcomment = () => {
                             <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
                                 <CommentIcon />
                             </Avatar>
-                            <Typography component="h1" variant="h5" style={{ marginTop: '20px' }}>
+                            <Typography component="h1" variant="h5" style={{ marginTop: '5px' }}>
                                 Post Comment
                             </Typography>
-                            <form onSubmit={handleOnSubmit} style={{ width: '100%', marginTop: '20px' }}>
+                            <form onSubmit={handleOnSubmit} style={{ width: '100%', marginTop: '20px', padding: '20px' }}>
                                 <Grid container spacing={2}>
                                     <Grid item xs={12}>
                                         <TextField

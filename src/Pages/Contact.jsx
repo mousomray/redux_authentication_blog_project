@@ -1,164 +1,183 @@
-import React, { useEffect, useState } from 'react';
-import Layout from '../Common/Layout';
-import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
-import CssBaseline from '@mui/material/CssBaseline';
-import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
-import Link from '@mui/material/Link';
-import Paper from '@mui/material/Paper';
-import Box from '@mui/material/Box';
-import Grid from '@mui/material/Grid';
-import ContactsIcon from '@mui/icons-material/Contacts';
-import Typography from '@mui/material/Typography';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { addcontact } from '../Allreducers/contactslice';
-import { useSelector, useDispatch } from 'react-redux';
+import React, { useState } from 'react'
+import Layout from '../Common/Layout'
+import { addcontact } from '../Allreducers/contactslice'
+import { useDispatch } from 'react-redux'
+import { useMutation } from "@tanstack/react-query";
+import { useForm } from "react-hook-form";
 import Loader from '../Common/Loader';
 
-
-
-const initialstate = {
-    name: '',
-    email: '',
-    phone: '',
-    message: ''
-}
-
-function Copyright(props) {
-    return (
-        <Typography variant="body2" color="text.secondary" align="center" {...props}>
-            {'Copyright © '}
-            <Link color="inherit" href="https://mui.com/">
-                Your Website
-            </Link>{' '}
-            {new Date().getFullYear()}
-            {'.'}
-        </Typography>
-    );
-}
-
-const defaultTheme = createTheme();
-
 const Contact = () => {
-    const [contact, setContact] = useState(initialstate);
-    const { loading } = useSelector((state) => state.mycontact);
-    const dispatch = useDispatch();
 
+    const dispatch = useDispatch()
+    const [loading, setLoading] = useState(false);
+    const { register, handleSubmit, formState: { errors }, reset } = useForm();
 
-    const handleOnChange = (e) => {
-        const { name, value } = e.target;
-        setContact({ ...contact, [name]: value });
+    const con = async (data) => {
+
+        const mycondata = {
+            name: data.name,
+            email: data.email,
+            phone: data.phone,
+            message: data.message,
+        }
+
+        const response = await dispatch(addcontact(mycondata))
+        console.log("My Contact response is ", response);
+        if (response && response?.type === "addcontact/fulfilled") {
+            reset(); // Blank form after submitting data
+            setLoading(false)
+        }else{
+            setLoading(false)
+        }
+
+        return response.data;
     };
 
-    const handleOnSubmit = (e) => {
-        e.preventDefault();
+    // Start Mutation Area
+    const mutation = useMutation({
+        mutationFn: (data) => con(data),
+    });
 
-        dispatch(addcontact(contact))
-        setContact(initialstate);
+
+    // Handle On Submit Area
+    const onSubmit = (data) => {
+        setLoading(true)
+        mutation.mutate(data);
     };
 
     return (
-        <Layout>
-            <ThemeProvider theme={defaultTheme}>
-                <Grid container component="main" sx={{ height: '100vh', marginTop: '45px' }} onSubmit={handleOnSubmit}>
-                    <CssBaseline />
-                    <Grid
-                        item
-                        xs={false}
-                        sm={4}
-                        md={7}
-                        sx={{
-                            backgroundImage: 'url(https://source.unsplash.com/random?wallpapers)',
-                            backgroundRepeat: 'no-repeat',
-                            backgroundColor: (t) =>
-                                t.palette.mode === 'light' ? t.palette.grey[50] : t.palette.grey[900],
-                            backgroundSize: 'cover',
-                            backgroundPosition: 'center',
-                        }}
-                    />
-                    <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
-                        <Box
-                            sx={{
-                                my: 8,
-                                mx: 4,
-                                display: 'flex',
-                                flexDirection: 'column',
-                                alignItems: 'center',
-                            }}
-                        >
-                            <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-                                <ContactsIcon />
-                            </Avatar>
-                            <Typography component="h1" variant="h5">
-                                Contact
-                            </Typography>
-                            <Box component="form" noValidate sx={{ mt: 1 }}>
-                                <TextField
-                                    margin="normal"
-                                    required
-                                    fullWidth
-                                    id="name"
-                                    label="Name"
-                                    name="name"
-                                    autoComplete="name"
-                                    autoFocus
-                                    onChange={handleOnChange}
-                                    value={contact.name}
-                                />
-                                <TextField
-                                    margin="normal"
-                                    required
-                                    fullWidth
-                                    id="email"
-                                    label="Email Address"
-                                    name="email"
-                                    autoComplete="email"
-                                    autoFocus
-                                    onChange={handleOnChange}
-                                    value={contact.email}
-                                />
-                                <TextField
-                                    margin="normal"
-                                    required
-                                    fullWidth
-                                    id="phone"
-                                    label="Phone Number"
-                                    name="phone"
-                                    autoComplete="phone"
-                                    autoFocus
-                                    onChange={handleOnChange}
-                                    value={contact.phone}
-                                />
-                                <TextField
-                                    margin="normal"
-                                    required
-                                    fullWidth
-                                    name="message"
-                                    label="Message"
-                                    type="message"
-                                    id="message"
-                                    autoComplete="message"
-                                    onChange={handleOnChange}
-                                    value={contact.message}
-                                />
+        <>
+            <Layout>
 
-                                <Button
-                                    type="submit"
-                                    fullWidth
-                                    variant="contained"
-                                    sx={{ mt: 3, mb: 2 }}
-                                >
-                                    {loading ? <Loader /> : 'Submit'}
-                                </Button>
-                            </Box>
-                        </Box>
-                    </Grid>
-                </Grid>
-            </ThemeProvider>
-        </Layout>
-    );
+                {/* <!-- ======= Contact Section ======= --> */}
+                <div class="map-section">
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d58906.14545488164!2d88.28142013124996!3d22.667427400000008!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39f89ce68e7cfa39%3A0xecc5dd803484eae5!2sUttarpara%20Co-operative%20Bank!5e0!3m2!1sen!2sin!4v1712406400333!5m2!1sen!2sin" frameborder="0" style={{ border: '0', width: '100%', height: '350px' }} allowfullscreen></iframe>
+                </div>
+
+                <section id="contact" class="contact">
+                    <div class="container">
+
+                        <div class="row justify-content-center" data-aos="fade-up">
+
+                            <div class="col-lg-10">
+
+                                <div class="info-wrap">
+                                    <div class="row">
+                                        <div class="col-lg-4 info">
+                                            <i class="icofont-google-map"></i>
+                                            <h4>Location:</h4>
+                                            <p>15 SC Street<br />Westbengal, 700003</p>
+                                        </div>
+
+                                        <div class="col-lg-4 info mt-4 mt-lg-0">
+                                            <i class="icofont-envelope"></i>
+                                            <h4>Email:</h4>
+                                            <p>blog@gmail.com<br />contact@gmail.com</p>
+                                        </div>
+
+                                        <div class="col-lg-4 info mt-4 mt-lg-0">
+                                            <i class="icofont-phone"></i>
+                                            <h4>Call:</h4>
+                                            <p>+033-26643827<br />+033-34423657</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <div class="row mt-5 justify-content-center" data-aos="fade-up">
+                            <div class="col-lg-10">
+                                <form action="forms/contact.php" method="post" role="form" class="php-email-form" onSubmit={handleSubmit(onSubmit)}>
+                                    <div class="form-row">
+                                        <div class="col-md-6 form-group">
+                                            <input type="text" name="name" class="form-control" id="name" placeholder="Your Name" data-rule="minlen:4" data-msg="Please enter at least 4 chars"
+
+                                                {...register("name", {
+                                                    required: "This field is Required",
+                                                    minLength: {
+                                                        value: 4,
+                                                        message: "Name must be atleast 4 characters"
+                                                    }
+                                                })}
+
+                                            />
+                                            {errors?.name && (
+                                                <p style={{ color: 'red' }}>{errors.name.message}</p>
+                                            )}
+                                        </div>
+                                        <div class="col-md-6 form-group">
+                                            <input type="email" class="form-control" name="email" id="email" placeholder="Your Email" data-rule="email" data-msg="Please enter a valid email"
+
+                                                {...register("email", {
+                                                    required: "This field is required",
+                                                    pattern: {
+                                                        value: /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+                                                        message: "Email Pattern should be xyz@gmail.com",
+                                                    },
+                                                })}
+
+                                            />
+                                            {errors?.email && (
+                                                <p style={{ color: 'red' }}>{errors.email.message}</p>
+                                            )}
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <input type="number" class="form-control" name="phone" id="phone" placeholder="Phone" data-rule="minlen:4" data-msg="Please enter at least 10 chars of phone number"
+
+                                            {...register("phone", {
+                                                required: "This field is Required",
+                                                minLength: {
+                                                    value: 10,
+                                                    message: "Phone number must be 10 characters"
+                                                },
+                                                maxLength: {
+                                                    value: 10,
+                                                    message: "Phone number must be 10 characters"
+                                                }
+                                            })}
+
+                                        />
+                                        {errors?.phone && (
+                                            <p style={{ color: 'red' }}>{errors.phone.message}</p>
+                                        )}
+                                    </div>
+                                    <div class="form-group">
+                                        <textarea class="form-control" name="message" rows="5" data-rule="required" data-msg="Please write something for us" placeholder="Message"
+
+                                            {...register("message", {
+                                                required: "This field is Required",
+                                                minLength: {
+                                                    value: 4,
+                                                    message: "Name must be atleast 4 characters"
+                                                }
+                                            })}
+
+                                        ></textarea>
+                                        {errors?.message && (
+                                            <p style={{ color: 'red' }}>{errors.message.message}</p>
+                                        )}
+                                    </div>
+                                    <div class="mb-3">
+                                        <div class="loading">Loading</div>
+                                        <div class="error-message"></div>
+                                        <div class="sent-message">Your message has been sent. Thank you!</div>
+                                    </div>
+                                    <div class="text-center"><button type="submit">{loading ? <Loader /> : 'Submit'}</button></div>
+                                </form>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </section>
+                {/* <!-- End Contact Section --> */}
+
+            </Layout>
+        </>
+    )
 }
 
-export default Contact;
+export default Contact

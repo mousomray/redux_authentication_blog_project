@@ -1,11 +1,12 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"; // createSlice make state slice and createAsyncThunk handle asynconomous function 
 import axiosInstance from "../api/api"
 import { toast } from "react-toastify";
+import { endpoints } from "../endpoint/endpoint";
 
 // Call Api for create user
 export const addcontact = createAsyncThunk("addcontact", async (data, { rejectWithValue }) => {
     try {
-        const apiurl = `contact/create`
+        const apiurl = endpoints.cms.contact
         const response = await axiosInstance.post(apiurl, data);
         if (response && response?.data?.success === true) {
             console.log("Fetching Add contact data", response);

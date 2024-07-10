@@ -8,7 +8,7 @@ const Loader = () => {
                 visible={true}
                 height="35"
                 width="35"
-                ariaLabel="hourglass-loading"
+                ariaLabel="hourglass-loading" 
                 wrapperStyle={{}}
                 wrapperClass=""
                 colors={['white', 'white']}

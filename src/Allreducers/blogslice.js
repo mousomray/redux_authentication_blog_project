@@ -1,10 +1,11 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axiosInstance from "../api/api"
+import { endpoints } from "../endpoint/endpoint";
 
 // Call Api for blog Slider
 export const allblog = createAsyncThunk("allblog", async (_, { rejectWithValue }) => {
     try {
-        const apiurl = 'allBlog'
+        const apiurl = endpoints.cms.blog
         const response = await axiosInstance.get(apiurl);
         console.log("Fetching blog data", response);
         return response?.data?.data

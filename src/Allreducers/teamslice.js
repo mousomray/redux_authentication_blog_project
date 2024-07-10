@@ -1,10 +1,11 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axiosInstance from "../api/api"
+import { endpoints } from "../endpoint/endpoint";
 
 // Call Api for team Slider
 export const team = createAsyncThunk("team", async (_, { rejectWithValue }) => {
     try {
-        const apiurl = 'team'
+        const apiurl = endpoints.cms.team
         const response = await axiosInstance.get(apiurl);
         console.log("Fetching Team data", response);
         return response?.data?.TeamMember

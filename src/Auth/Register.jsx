@@ -1,179 +1,230 @@
-import React, { useState, useEffect } from 'react';
-import Layout from '../Common/Layout';
+import React, { useState, useEffect } from 'react'
+import Avatar from '@mui/material/Avatar';
+import Button from '@mui/material/Button';
+import CssBaseline from '@mui/material/CssBaseline';
+import TextField from '@mui/material/TextField';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
 import { Link } from 'react-router-dom';
+import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import Typography from '@mui/material/Typography';
+import Container from '@mui/material/Container';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import Layout from '../Common/Layout'
+import { useForm } from "react-hook-form";
 import { useSelector, useDispatch } from 'react-redux';
-import { registerUser } from '../Auth/authslice'; // Import registerUser function
+import { useMutation } from "@tanstack/react-query";
+import { registerUser } from './authslice';
 import { useNavigate } from 'react-router-dom';
-import { Typography, Container, Avatar, Grid, CssBaseline, TextField, Button, Box, FormControlLabel, Checkbox, Paper } from '@mui/material';
-import AppRegistrationIcon from '@mui/icons-material/AppRegistration';
-import Loader from '../Common/Loader'; // Import Loading 
+import Loader from '../Common/Loader';
 
-const initialValue = {
-    name: '',
-    email: '',
-    mobile: '',
-    password: '',
-    photo: ''
-};
+
+function Copyright(props) {
+    return (
+        <Typography variant="body2" color="text.secondary" align="center" {...props}>
+            {'Copyright © '}
+            <Link color="inherit" href="https://mui.com/">
+                Your Website
+            </Link>{' '}
+            {new Date().getFullYear()}
+            {'.'}
+        </Typography>
+    );
+}
+
+const defaultTheme = createTheme();
+
+
 
 const Register = () => {
-    const navigate = useNavigate();
-    const dispatch = useDispatch();
-    const { redirectReg, loading } = useSelector((state) => state?.Auth); // Get Data from Store 
-    const [user, setUser] = useState(initialValue);
-    const [error, setError] = useState({});
+
+    const navigate = useNavigate()
+    const dispatch = useDispatch()
+    const { loading } = useSelector((state) => state?.Auth);
+    const { register, handleSubmit, formState: { errors }, reset } = useForm();
     const [image, setImage] = useState(null);
 
-    const validation = () => {
-        let error = {};
+    const reg = async (data) => {
 
-        if (!user.name) {
-            error.name = 'Name is Required';
-        }
+        // Handling Form Data Area
+        const formData = new FormData();
+        formData.append("name", data.name);
+        formData.append("email", data.email);
+        formData.append("mobile", data.mobile);
+        formData.append("password", data.password);
+        formData.append("photo", image);
 
-        if (!user.email) {
-            error.email = 'Email is Required';
-        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(user.email)) {
-            error.email = 'Invalid Email';
-        }
-
-        if (!user.mobile) {
-            error.mobile = 'Mobile is Required';
-        }
-
-        if (!user.password) {
-            error.password = 'Password is Required';
-        }
-
-        return error;
-    };
-
-    const postUserData = (e) => {
-        const { name, value } = e.target;
-        setUser({ ...user, [name]: value });
-
-       // Short Cut Validation process in handle on change 
-        if (!value) {
-            setError({ ...error, [name]: `${name.charAt(0).toUpperCase() + name.slice(1)} is Required` });
+        const response = await dispatch(registerUser(formData))
+        console.log("My Reg response is ", response);
+        if (response && response?.payload?.success === true) {
+            reset(); // Blank form after submitting data
+            navigate("/login");
         } else {
-            setError({ ...error, [name]: '' });
+            navigate("/register")
         }
+        return response.data;
     };
 
-    const SubmitInfo = (e) => {
-        e.preventDefault();
-        const ErrorList = validation();
-       
-        if (Object.keys(ErrorList).length === 0) {
-            const formData = new FormData();
-            formData.append('name', user.name);
-            formData.append('email', user.email);
-            formData.append('mobile', user.mobile);
-            formData.append('password', user.password);
-            formData.append('photo', image);
-            dispatch(registerUser(formData));
-        }
+    // Start Mutation Area
+    const mutation = useMutation({
+        mutationFn: (data) => reg(data),
+    });
+
+    // Handle On Submit Area
+    const onSubmit = (data) => {
+        mutation.mutate(data);
     };
 
-    
-    // For Redirect which is part of Authentication (Start) 
-    const redirectUser = () => {
-        const name = localStorage.getItem('name');
-        const isInLoginPage = window.location.pathname.toLowerCase() === '/register';
-        if (name !== null && name !== undefined && name !== '') {
-            isInLoginPage && navigate('/login');
-        }
-    };
-
-    useEffect(() => {
-        redirectUser();
-    }, [redirectReg]);
-    // For Redirect which is part of Authentication (End) 
 
     return (
-        <Layout>
-            <Container component="main" maxWidth="xs">
-                <CssBaseline />
-                <Paper elevation={3} sx={{ padding: 4, marginTop: 8 }}>
-                    <Avatar sx={{ bgcolor: 'secondary.main', margin: 'auto' }}>
-                        <AppRegistrationIcon />
-                    </Avatar>
-                    <Typography component="h1" variant="h5" align="center" sx={{ mt: 2 }}>
-                        Register
-                    </Typography>
-                    <Box component="form" onSubmit={SubmitInfo} sx={{ mt: 2 }}>
-                        <TextField
-                            margin="normal"
-                            fullWidth
-                            id="name"
-                            label="Name"
-                            name="name"
-                            autoFocus
-                            value={user.name}
-                            onChange={postUserData}
-                            error={!!error.name}
-                            helperText={error.name}
-                        />
-                        <TextField
-                            margin="normal"
-                            fullWidth
-                            id="email"
-                            label="Email Address"
-                            name="email"
-                            value={user.email}
-                            onChange={postUserData}
-                            error={!!error.email}
-                            helperText={error.email}
-                        />
-                        <TextField
-                            margin="normal"
-                            fullWidth
-                            id="mobile"
-                            label="Mobile"
-                            name="mobile"
-                            value={user.mobile}
-                            onChange={postUserData}
-                            error={!!error.mobile}
-                            helperText={error.mobile}
-                        />
-                        <TextField
-                            margin="normal"
-                            fullWidth
-                            name="password"
-                            label="Password"
-                            type="password"
-                            id="password"
-                            value={user.password}
-                            onChange={postUserData}
-                            error={!!error.password}
-                            helperText={error.password}
-                        />
-                        {/*This form section is for the submit image*/}
-                        <div style={{ marginBottom: '20px' }}>
-                            <input type="file" onChange={(e) => setImage(e.target.files[0])} name="image" accept="image/*" className="form-control" />
+        <>
+            <Layout>
 
-                            {image !== "" && image !== undefined && image !== null ? (
-                                <img style={{ height: "180px" }} src={URL.createObjectURL(image)} alt="" className="upload-img" />
-                            ) : (
-                                <>{image === "" && <p style={{ color: 'white' }}>Drag or drop content here</p>}</>
-                            )}
-                        </div>
-                        {/*Image area end*/}
-                        <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
-                            {loading? <Loader/> : 'Register'}
-                        </Button>
-                    </Box>
-                    <Grid container justifyContent="flex-end">
-                        <Grid item>
-                            <Link to="/login" variant="body2">
-                                Already have an account? Sign in
-                            </Link>
-                        </Grid>
-                    </Grid>
-                </Paper>
-            </Container>
-        </Layout>
-    );
-};
+                <ThemeProvider theme={defaultTheme}>
+                    <Container component="main" maxWidth="xs">
+                        <CssBaseline />
+                        <Box
+                             sx={{
+                                marginTop: 10,
+                                marginBottom: 8,
+                                display: 'flex',
+                                flexDirection: 'column',
+                                alignItems: 'center',
+                            }}
+                        >
+                            <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+                                <LockOutlinedIcon />
+                            </Avatar>
+                            <Typography component="h1" variant="h5">
+                                Register
+                            </Typography>
+                            <Box component="form" noValidate sx={{ mt: 1 }} onSubmit={handleSubmit(onSubmit)}>
 
-export default Register;
+                                <Grid container spacing={2}>
+
+                                    <Grid item xs={12}>
+                                        <TextField
+                                            required
+                                            fullWidth
+                                            id="name"
+                                            label="Name"
+                                            {...register("name", {
+                                                required: "This field is Required",
+                                                minLength: {
+                                                    value: 3,
+                                                    message: "Name must be atleast 3 characters"
+                                                }
+                                            })}
+                                        />
+                                        {errors?.name && (
+                                            <p style={{ color: 'red' }}>{errors.name.message}</p>
+                                        )}
+                                    </Grid>
+
+                                    <Grid item xs={12}>
+                                        <TextField
+                                            required
+                                            fullWidth
+                                            type="email"
+                                            id="email"
+                                            label="Email"
+                                            {...register("email", {
+                                                required: "This field is required",
+                                                pattern: {
+                                                    value: /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+                                                    message: "Email Pattern should be xyz@gmail.com",
+                                                },
+                                            })}
+                                        />
+                                        {errors.email && <p style={{ color: 'red' }}>{errors.email.message}</p>}
+                                    </Grid>
+
+                                    <Grid item xs={12}>
+                                        <TextField
+                                            required
+                                            fullWidth
+                                            type="number"
+                                            id="mobile"
+                                            label="mobile"
+                                            {...register("mobile", {
+                                                required: "This field is Required",
+                                                minLength: {
+                                                    value: 10,
+                                                    message: "Phone number must be 10 characters"
+                                                },
+                                                maxLength: {
+                                                    value: 10,
+                                                    message: "Phone number must be 10 characters"
+                                                }
+                                            })}
+                                        />
+                                        {errors?.phone && (
+                                            <p style={{ color: 'red' }}>{errors.phone.message}</p>
+                                        )}
+                                    </Grid>
+
+                                    <Grid item xs={12}>
+                                        <TextField
+                                            required
+                                            fullWidth
+                                            type="password"
+                                            id="password"
+                                            label="Password"
+                                            {...register("password", {
+                                                required: "This field is Required",
+                                                minLength: {
+                                                    value: 8,
+                                                    message: "Password must be 8 characters"
+                                                }
+                                            })}
+                                        />
+                                        {errors?.password && (
+                                            <p style={{ color: 'red' }}>{errors.password.message}</p>
+                                        )}
+                                    </Grid>
+
+                                    {/*This form section is for the submit image*/}
+                                    <Grid item xs={12}>
+                                        <div style={{ marginBottom: '20px' }}>
+                                            <input type="file" onChange={(e) => setImage(e.target.files[0])} name="image" accept="image/*" className="form-control" />
+
+                                            {image !== "" && image !== undefined && image !== null ? (
+                                                <img style={{ height: "180px" }} src={URL.createObjectURL(image)} alt="" className="upload-img" />
+                                            ) : (
+                                                <>{image === "" && <p style={{ color: 'white' }}>Drag or drop content here</p>}</>
+                                            )}
+                                        </div>
+                                    </Grid>
+                                    {/*Image area end*/}
+                                </Grid>
+
+
+                                <Button
+                                    type="submit"
+                                    fullWidth
+                                    variant="contained"
+                                    sx={{ mt: 3, mb: 2 }}
+                                >
+                                    {loading ? <Loader /> : 'Register'}
+                                </Button>
+
+                                <Grid container>
+                                    <Grid item>
+                                        <Link to="/login" variant="body2">
+                                            {"You have an account? Login"}
+                                        </Link>
+                                    </Grid>
+                                </Grid>
+                            </Box>
+                        </Box>
+                    </Container>
+                </ThemeProvider>
+
+            </Layout>
+        </>
+    )
+}
+
+export default Register

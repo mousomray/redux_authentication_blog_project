@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react'
 import { toast } from 'react-toastify';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -12,23 +12,22 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
-import MenuBookIcon from '@mui/icons-material/MenuBook';
+import BookIcon from '@mui/icons-material/Book';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
-
 import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '../Auth/authslice';
 
-const pages = ['Home', 'Blog', 'Course', 'Contact'];
-const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
+const pages = ['Home', 'Blog', 'Course','Addstudent','Showstudent','Contact'];
+const settings = ['Profile', 'Dashboard', 'Update Password', 'Logout'];
 
-function ResponsiveAppBar() {
+const Navbar = () => {
+
     const dispatch = useDispatch();
     const { Logouttoggle } = useSelector((state) => state?.Auth);
     const name = localStorage.getItem("name");
     const navigate = useNavigate()
 
-    // Handle of Logout
     const handleLogout = () => {
         dispatch(logout())
         navigate("/login")
@@ -54,15 +53,17 @@ function ResponsiveAppBar() {
 
     return (
         <>
-            <AppBar position="fixed">
+            {/*Navbar Start*/}
+            <AppBar position="fixed" sx={{ background: '#1bbd36' }}>
+
                 <Container maxWidth="xl">
                     <Toolbar disableGutters>
-                        <MenuBookIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
+                        <BookIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1, fontSize: '50px' }} />
                         <Typography
                             variant="h6"
                             noWrap
                             component={Link}
-                            to="/"
+                            to="/blog"
                             sx={{
                                 mr: 2,
                                 display: { xs: 'none', md: 'flex' },
@@ -73,7 +74,7 @@ function ResponsiveAppBar() {
                                 textDecoration: 'none',
                             }}
                         >
-                            PROJECT
+                            BLOG
                         </Typography>
 
                         <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
@@ -119,7 +120,7 @@ function ResponsiveAppBar() {
                             variant="h5"
                             noWrap
                             component="a"
-                            href="#app-bar-with-responsive-menu"
+                            to="/blog"
                             sx={{
                                 mr: 2,
                                 display: { xs: 'flex', md: 'none' },
@@ -131,7 +132,7 @@ function ResponsiveAppBar() {
                                 textDecoration: 'none',
                             }}
                         >
-                            Project
+                            BLOG
                         </Typography>
                         <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' }, justifyContent: 'flex-end' }}>
                             {pages.map((page) => (
@@ -151,7 +152,7 @@ function ResponsiveAppBar() {
                                 <>
                                     <Tooltip title="Open settings">
                                         <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                                            <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+                                            <Avatar src="https://cdn-icons-png.flaticon.com/128/219/219970.png" alt={name} />
                                         </IconButton>
                                     </Tooltip>
                                     <Menu
@@ -174,11 +175,18 @@ function ResponsiveAppBar() {
                                             <MenuItem key={setting} onClick={setting === 'Logout' ? handleLogout : handleCloseUserMenu}>
                                                 {setting === 'Profile' ? (
                                                     <Typography textAlign="center">Profile: {name}</Typography>
+                                                ) : setting === 'Update Password' ? (
+                                                    <Typography textAlign="center">
+                                                        <Link to="/update">Update Password</Link>
+                                                    </Typography>
                                                 ) : (
-                                                    <Typography textAlign="center">{setting}</Typography>
+                                                    <Typography textAlign="center">
+                                                        <Link to={`/${setting.toLowerCase()}`}>{setting}</Link>
+                                                    </Typography>
                                                 )}
                                             </MenuItem>
                                         ))}
+
                                     </Menu>
                                 </>
                             ) : (
@@ -190,8 +198,9 @@ function ResponsiveAppBar() {
                     </Toolbar>
                 </Container>
             </AppBar>
+            {/*Navbar End*/}
         </>
-    );
+    )
 }
 
-export default ResponsiveAppBar;
+export default Navbar

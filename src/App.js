@@ -1,5 +1,6 @@
 import React from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query' // For React Query
 import Home from './Pages/Home'
 import Blog from './Pages/Blog'
 import Categorydetails from './Pages/Categorydetails'
@@ -14,12 +15,20 @@ import Register from './Auth/Register'
 import { check_token } from './Auth/authslice';
 import { useDispatch } from 'react-redux';
 import { useEffect } from 'react'
-
+import Update from './Auth/Update'
+import Dashboard from './Auth/Dashboard'
+import Addstudent from './Crud/Addstudent'
+import Showstudent from './Crud/Showstudent'
+import Editstudent from './Crud/Editstudent'
 
 
 const App = () => {
 
   const dispatch = useDispatch();
+  // Create Query Client For React Query
+  const queryClient = new QueryClient()
+
+
   //check token avable or not
   function PrivateRoute({ children }) {
     const token = localStorage.getItem("token") || sessionStorage.getItem("token");
@@ -51,6 +60,22 @@ const App = () => {
     {
       path: '/contact',
       component: <Contact />
+    },
+    {
+      path:'/update',
+      component: <Update/>
+    },
+    {
+      path: '/addstudent',
+      component: <Addstudent/>
+    },
+    {
+      path: '/showstudent',
+      component: <Showstudent/>
+    },
+    {
+      path: '/editstudent/:id',
+      component: <Editstudent/>
     }
   ]
 
@@ -66,6 +91,10 @@ const App = () => {
     {
       path: '/register',
       component: <Register />
+    },
+    {
+      path: '/dashboard',
+      component: <Dashboard/>
     }
   ]
 
@@ -78,30 +107,33 @@ const App = () => {
     <>
       <ToastContainer />
 
-      <Router>
-        <Routes>
+      {/*Cover with QueryClientProvider*/}
+      <QueryClientProvider client={queryClient}>
+        <Router>
+          <Routes>
 
-          {/*Area of private routing*/}
-          {public_routing?.map((routing) => {
-            return (
-              <>
-                <Route path={routing?.path} element={routing?.component} />
-              </>
-            )
-          })}
+            {/*Area of private routing*/}
+            {public_routing?.map((routing) => {
+              return (
+                <>
+                  <Route path={routing?.path} element={routing?.component} />
+                </>
+              )
+            })}
 
 
-          {/*Area of public routing*/}
-          {private_routing?.map((routing) => {
-            return (
-              <>
-                <Route path={routing?.path} element={<PrivateRoute>{routing?.component}</PrivateRoute>} />
-              </>
-            )
-          })}
+            {/*Area of public routing*/}
+            {private_routing?.map((routing) => {
+              return (
+                <>
+                  <Route path={routing?.path} element={<PrivateRoute>{routing?.component}</PrivateRoute>} />
+                </>
+              )
+            })}
 
-        </Routes>
-      </Router>
+          </Routes>
+        </Router>
+      </QueryClientProvider>
     </>
   )
 }

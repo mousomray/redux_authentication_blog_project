@@ -1,10 +1,11 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axiosInstance from "../api/api"
+import { endpoints } from "../endpoint/endpoint";
 
 // Call Api for Banner Slider
 export const banner = createAsyncThunk("banner", async (_, { rejectWithValue }) => {
     try {
-        const apiurl = 'banner'
+        const apiurl = endpoints.cms.hero
         const response = await axiosInstance.get(apiurl);
         console.log("Fetching Banner data", response);
         return response?.data?.bannerdata

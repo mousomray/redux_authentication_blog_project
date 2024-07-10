@@ -1,81 +1,78 @@
-import React from 'react';
-import { useState, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import Layout from '../Common/Layout';
-import { Link } from 'react-router-dom';
-import { loginRequest, RegLog } from '../Auth/authslice'; // Import loginRequest function
+import React, { useState, useEffect } from 'react'
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
+import { Link } from 'react-router-dom'
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import LoginIcon from '@mui/icons-material/Login';
-import Loader from '../Common/Loader'; // Import Loader
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import Layout from '../Common/Layout'
+import { useForm } from "react-hook-form";
+import { useSelector, useDispatch } from 'react-redux';
+import { useMutation } from "@tanstack/react-query";
+import { loginRequest, RegLog } from './authslice';
+import { useNavigate } from 'react-router-dom';
+import Loader from '../Common/Loader';
 
-const initialValue = {
-    email: '',
-    password: ''
+
+function Copyright(props) {
+    return (
+        <Typography variant="body2" color="text.secondary" align="center" {...props}>
+            {'Copyright © '}
+            <Link color="inherit" href="https://mui.com/">
+                Your Website
+            </Link>{' '}
+            {new Date().getFullYear()}
+            {'.'}
+        </Typography>
+    );
 }
 
+const defaultTheme = createTheme();
+
+
+
 const Login = () => {
-    const navigate = useNavigate();
-    const dispatch = useDispatch();
-    const [user, setUser] = useState(initialValue);
-    const { redirectTo, loading } = useSelector((state) => state?.Auth);
-    const [error, setError] = useState({});
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setUser({ ...user, [name]: value });
+    const navigate = useNavigate()
+    const dispatch = useDispatch()
+    const { loading } = useSelector((state) => state?.Auth);
+    const { register, handleSubmit, formState: { errors }, reset } = useForm();
 
-        // Short Cut Validation process in handle on change 
-        if (!value) {
-            setError({ ...error, [name]: `${name.charAt(0).toUpperCase() + name.slice(1)} is Required` });
-        } else {
-            setError({ ...error, [name]: '' });
+
+    const reg = async (data) => {
+
+        const mylogindata = {
+            email: data.email,
+            password: data.password
         }
+
+        const response = await dispatch(loginRequest(mylogindata))
+        console.log("My Login response is ", response);
+        if (response && response?.payload?.status === 200) {
+            reset(); // Blank form after submitting data
+            navigate("/blog");
+        }
+
+        return response.data;
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        let ErrorList = validation();
-        setError(ErrorList);
+    // Start Mutation Area
+    const mutation = useMutation({
+        mutationFn: (data) => reg(data),
+    });
 
-        if (Object.keys(ErrorList).length === 0) {
-            dispatch(loginRequest(user));
-        }
+
+    // Handle On Submit Area
+    const onSubmit = (data) => {
+        mutation.mutate(data);
     };
-
-    const validation = () => {
-        let error = {}
-        if (!user.email) {
-            error.email = 'Email is required';
-        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(user.email)) {
-            error.email = 'Invalid email format';
-        }
-        if (!user.password) {
-            error.password = 'Password is required';
-        }
-        return error;
-    };
-
-    //Redirect if get the token or not get the token 
-    const redirectUser = () => {
-        let token = localStorage.getItem("token")
-        let isInLoginPage = window.location.pathname.toLowerCase() === "/login";
-
-        if (token !== null && token !== undefined && token !== "") {
-            isInLoginPage && navigate("/blog");
-        }
-    }
-    useEffect(() => {
-        redirectUser()
-    }, [redirectTo])
-    // Redirect Area End 
 
 
 
@@ -87,72 +84,99 @@ const Login = () => {
 
 
     return (
-        <Layout>
-            <Container component="main" maxWidth="xs" style={{ marginTop: '150px' }}>
-                <CssBaseline />
-                <Box
-                    sx={{
-                        marginTop: 8,
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                    }}
-                >
-                    <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-                        <LoginIcon />
-                    </Avatar>
-                    <Typography component="h1" variant="h5">
-                        Login
-                    </Typography>
-                    <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-                        <TextField
-                            margin="normal"
-                            required
-                            fullWidth
-                            id="email"
-                            label="Email Address"
-                            name="email"
-                            autoComplete="email"
-                            autoFocus
-                            value={user.email}
-                            onChange={handleChange}
-                            error={!!error.email}
-                            helperText={error.email}
-                        />
-                        <TextField
-                            margin="normal"
-                            required
-                            fullWidth
-                            name="password"
-                            label="Password"
-                            type="password"
-                            id="password"
-                            autoComplete="current-password"
-                            value={user.password}
-                            onChange={handleChange}
-                            error={!!error.password}
-                            helperText={error.password}
-                        />
-                        <Button
-                            type="submit"
-                            fullWidth
-                            variant="contained"
-                            sx={{ mt: 3, mb: 2 }}
-                        >
-                            {loading ? <Loader /> : 'Login'}
-                        </Button>
-                        <Grid container>
-                            <Grid item>
-                                <Link to="/register" variant="body2" onClick={log}>
-                                    {"Don't have an account? Register Now"}
-                                </Link>
-                            </Grid>
-                        </Grid>
-                    </Box>
-                </Box>
-            </Container>
-        </Layout>
-    );
-};
+        <>
+            <Layout>
 
-export default Login;
+                <ThemeProvider theme={defaultTheme}>
+                    <Container component="main" maxWidth="xs">
+                        <CssBaseline />
+                        <Box
+                             sx={{
+                                marginTop: 10,
+                                marginBottom: 8,
+                                display: 'flex',
+                                flexDirection: 'column',
+                                alignItems: 'center',
+                            }}
+                        >
+                            <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+                                <LockOutlinedIcon />
+                            </Avatar>
+                            <Typography component="h1" variant="h5">
+                                Login
+                            </Typography>
+                            <Box component="form" noValidate sx={{ mt: 1 }} onSubmit={handleSubmit(onSubmit)}>
+
+                                <Grid container spacing={2}>
+
+
+
+                                    <Grid item xs={12}>
+                                        <TextField
+                                            required
+                                            fullWidth
+                                            type="email"
+                                            id="email"
+                                            label="Email"
+                                            {...register("email", {
+                                                required: "This field is required",
+                                                pattern: {
+                                                    value: /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+                                                    message: "Email Pattern should be xyz@gmail.com",
+                                                },
+                                            })}
+                                        />
+                                        {errors.email && <p style={{ color: 'red' }}>{errors.email.message}</p>}
+                                    </Grid>
+
+                                    <Grid item xs={12}>
+                                        <TextField
+                                            required
+                                            fullWidth
+                                            type="password"
+                                            id="password"
+                                            label="Password"
+                                            {...register("password", {
+                                                required: "This field is Required",
+                                                minLength: {
+                                                    value: 2,
+                                                    message: "Password must be 2 characters"
+                                                }
+                                            })}
+                                        />
+                                        {errors?.password && (
+                                            <p style={{ color: 'red' }}>{errors.password.message}</p>
+                                        )}
+
+                                    </Grid>
+
+                                </Grid>
+
+
+                                <Button
+                                    type="submit"
+                                    fullWidth
+                                    variant="contained"
+                                    sx={{ mt: 3, mb: 2 }}
+                                >
+                                    {loading ? <Loader /> : 'Login'}
+                                </Button>
+
+                                <Grid container style={{ display: "flex", justifyContent: "center" }}>
+                                    <Grid item>
+                                        <Link to="/register" variant="body2" onClick={log}>
+                                            {"Don't have an account? Register Now"}
+                                        </Link>
+                                    </Grid>
+                                </Grid>
+                            </Box>
+                        </Box>
+                    </Container>
+                </ThemeProvider>
+
+            </Layout>
+        </>
+    )
+}
+
+export default Login
