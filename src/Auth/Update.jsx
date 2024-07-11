@@ -65,11 +65,13 @@ const Update = () => {
                 <CssBaseline />
                 <Box
                     sx={{
-                        marginTop: 8,
+                        marginTop: 15,
                         marginBottom: 8,
+                        padding: 2,
                         display: 'flex',
                         flexDirection: 'column',
                         alignItems: 'center',
+                        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1), 0 6px 20px rgba(0, 0, 0, 0.12)'
                     }}
                 >
                     <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>

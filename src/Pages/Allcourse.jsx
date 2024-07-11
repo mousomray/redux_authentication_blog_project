@@ -74,11 +74,11 @@ const Allcourse = () => {
                     backgroundSize: '200% auto',
                     transition: 'background-position 0.5s ease',
                 }}
-            />
+            /> 
 
 
-            <TableContainer component={Paper} style={{ marginTop: '10px', display: 'flex', justifyContent: 'center' }}>
-                <Table sx={{ minWidth: 700 }} aria-label="customized table">
+            <TableContainer component={Paper}>
+                <Table sx={{ minWidth: 700, marginTop: '10px' }} aria-label="customized table">
                     <TableHead>
                         <TableRow>
                             <StyledTableCell align="centre">Image</StyledTableCell>
