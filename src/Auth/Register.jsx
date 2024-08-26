@@ -86,7 +86,7 @@ const Register = () => {
                     <Container component="main" maxWidth="xs">
                         <CssBaseline />
                         <Box
-                             sx={{
+                            sx={{
                                 marginTop: 15,
                                 marginBottom: 8,
                                 padding: 2,
@@ -162,8 +162,8 @@ const Register = () => {
                                                 }
                                             })}
                                         />
-                                        {errors?.phone && (
-                                            <p style={{ color: 'red' }}>{errors.phone.message}</p>
+                                        {errors?.mobile && (
+                                            <p style={{ color: 'red' }}>{errors.mobile.message}</p>
                                         )}
                                     </Grid>
 
