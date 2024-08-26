@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import axiosInstance from '../api/api'
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css'
-import { endpoints } from '../endpoint/endpoint';
+import { myendpoints } from '../endpoint/endpoint';
 
 const initialState = {
     loading: false,
@@ -14,7 +14,7 @@ const initialState = {
 // API fetch for Register
 export const registerUser = createAsyncThunk("/signup", async (user) => {
     try {
-        const apiurl = endpoints.auth.register
+        const apiurl = myendpoints[14]
         const response = await axiosInstance.post(apiurl, user);
         if (response && response?.data?.success === true) {
             //toast.success(response?.data?.message)
@@ -31,7 +31,7 @@ export const registerUser = createAsyncThunk("/signup", async (user) => {
 // API fetch for Login
 export const loginRequest = createAsyncThunk("login", async (user) => {
     try {
-        const apiurl = endpoints.auth.login
+        const apiurl = myendpoints[15]
         const response = await axiosInstance.post(apiurl, user);
         if (response && response?.data?.status === 200) {
             //toast.success(response?.data?.message)

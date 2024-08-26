@@ -1,12 +1,12 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axiosInstance from "../api/api"
 import { toast } from "react-toastify";
-import { endpoints } from "../endpoint/endpoint";
+import { myendpoints } from "../endpoint/endpoint";
 
 // Call Api for Update Password
 export const update = createAsyncThunk("update", async (data, { rejectWithValue }) => {
     try {
-        const apiurl = endpoints.auth.update
+        const apiurl = myendpoints[16]
         const response = await axiosInstance.post(apiurl, data);
         console.log("Fetching update Password data", response);
         toast.success(response?.data?.msg)

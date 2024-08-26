@@ -1,11 +1,12 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axiosInstance from "../api/api"
-import { endpoints } from "../endpoint/endpoint";
+// import { endpoints } from "../endpoint/endpoint";
+import { myendpoints } from "../endpoint/endpoint";
 
 // Call Api for blog Slider
 export const unlike = createAsyncThunk("unlike", async (id, { rejectWithValue }) => {
     try {
-        const apiurl = `${endpoints.cms.unlike}/${id}`
+        const apiurl = `${myendpoints[10]}/${id}`
         const response = await axiosInstance.put(apiurl, {});
         console.log("Fetching unlike data", response);
         return response?.data

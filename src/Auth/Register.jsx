@@ -149,7 +149,7 @@ const Register = () => {
                                             fullWidth
                                             type="number"
                                             id="mobile"
-                                            label="mobile"
+                                            label="Mobile"
                                             {...register("mobile", {
                                                 required: "This field is Required",
                                                 minLength: {

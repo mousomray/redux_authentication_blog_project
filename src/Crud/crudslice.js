@@ -1,12 +1,12 @@
 import { createAsyncThunk } from "@reduxjs/toolkit"; //createAsyncThunk handle asynconomous function 
 import axiosInstance from "../api/api"
 import { toast } from "react-toastify";
-import { endpoints } from "../endpoint/endpoint";
+import { myendpoints } from "../endpoint/endpoint";
 
 // Call Api for Add student
 export const addstudent = createAsyncThunk("addstudent", async (data, { rejectWithValue }) => {
     try {
-        const apiurl = endpoints.crud.addstudent
+        const apiurl = myendpoints[17]
         const response = await axiosInstance.post(apiurl, data);
         console.log("Fetching Add student data", response);
         toast.success(response?.data?.msg)
@@ -21,7 +21,7 @@ export const addstudent = createAsyncThunk("addstudent", async (data, { rejectWi
 // Call Api for All student
 export const allstudent = createAsyncThunk("allstudent", async (_, { rejectWithValue }) => {
     try {
-        const apiurl = endpoints.crud.allstudent
+        const apiurl = myendpoints[18]
         const response = await axiosInstance.get(apiurl);
         console.log("Fetching All student data", response);
         return response?.data?.data;
@@ -34,7 +34,7 @@ export const allstudent = createAsyncThunk("allstudent", async (_, { rejectWithV
 // Call Api for Delete Student
 export const deletestudent = createAsyncThunk("deletestudent", async (id, { rejectWithValue }) => {
     try {
-        const apiurl = endpoints.crud.delete
+        const apiurl = myendpoints[20]
         const response = await axiosInstance.delete(`${apiurl}/${id}`)
         console.log("Fetching Delete Student data", response);
         toast.success(response?.data?.msg)
@@ -49,7 +49,7 @@ export const deletestudent = createAsyncThunk("deletestudent", async (id, { reje
 // Call Api for Details student
 export const detailstudent = createAsyncThunk("detailstudent", async (id, { rejectWithValue }) => {
     try {
-        const apiurl = `${endpoints.crud.details}/${id}`
+        const apiurl = `${myendpoints[19]}/${id}`
         const response = await axiosInstance.get(apiurl);
         console.log("Fetching Details student data", response);
         return response?.data;
@@ -62,7 +62,7 @@ export const detailstudent = createAsyncThunk("detailstudent", async (id, { reje
 // Call Api for Edit student
 export const editstudent = createAsyncThunk("editstudent", async ({ data, id }, { rejectWithValue }) => {
     try {
-        const apiurl = `${endpoints.crud.edit}/${id}`
+        const apiurl = `${myendpoints[21]}/${id}`
         const response = await axiosInstance.post(apiurl, data);
         console.log("Fetching Edit student data", response);
         toast.success(response?.data?.message)

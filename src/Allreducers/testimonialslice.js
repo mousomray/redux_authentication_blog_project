@@ -1,11 +1,13 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axiosInstance from "../api/api"
-import { endpoints } from "../endpoint/endpoint";
+// import { endpoints } from "../endpoint/endpoint";
+import { myendpoints } from "../endpoint/endpoint";
 
 // Call Api for testimonial Slider
 export const testimonial = createAsyncThunk("testimonial", async (_, { rejectWithValue }) => {
     try {
-        const apiurl = endpoints.cms.testimonial
+        // const apiurl = endpoints.cms.testimonial
+        const apiurl = myendpoints[3]
         const response = await axiosInstance.get(apiurl);
         console.log("Fetching testimonial data", response);
         return response?.data?.testimonials

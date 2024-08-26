@@ -1,11 +1,13 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axiosInstance from "../api/api"
-import { endpoints } from "../endpoint/endpoint";
+// import { endpoints } from "../endpoint/endpoint";
+import { myendpoints } from "../endpoint/endpoint";
 
 // Call Api for recent Slider
 export const allrecent = createAsyncThunk("allrecent", async (_, { rejectWithValue }) => {
     try {
-        const apiurl = endpoints.cms.recentpost
+        // const apiurl = endpoints.cms.recentpost
+        const apiurl = myendpoints[7]
         const response = await axiosInstance.get(apiurl);
         console.log("Fetching recent data", response);
         return response?.data?.data
